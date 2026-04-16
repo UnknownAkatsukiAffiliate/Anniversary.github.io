@@ -299,8 +299,8 @@ body {
 
 .songs-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 40px;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 30px;
     margin-bottom: 60px;
 }
 
@@ -321,7 +321,7 @@ body {
 .song-image-container {
     position: relative;
     overflow: hidden;
-    height: 280px;
+    height: 200px;
 }
 
 .song-image {
@@ -370,29 +370,31 @@ body {
 }
 
 .song-info {
-    padding: 20px;
+    padding: 15px;
 }
 
 .song-title {
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 600;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     color: var(--dark-color);
 }
 
 .song-artist {
     color: #888;
-    font-size: 14px;
-    margin-bottom: 12px;
+    font-size: 12px;
+    margin-bottom: 8px;
     font-weight: 500;
 }
 
 .song-note {
     color: #999;
-    font-size: 13px;
+    font-size: 11px;
     font-style: italic;
-    line-height: 1.5;
+    line-height: 1.4;
     font-weight: 300;
+    word-wrap: break-word;
+    white-space: normal;
 }
 
 /* ============ MESSAGE SECTION ============ */
@@ -465,15 +467,15 @@ body {
 
 .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 20px;
 }
 
 .gallery-item {
     position: relative;
     overflow: hidden;
     border-radius: var(--border-radius);
-    height: 300px;
+    height: 250px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     cursor: pointer;
 }
@@ -577,12 +579,13 @@ body {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.8);
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
-    z-index: 3000;
-    opacity: 0;
+    z-index: 9999 !important;
+    opacity: 1;
     animation: fadeIn 0.3s ease forwards;
+    pointer-events: auto;
 }
 
 @keyframes fadeIn {
@@ -591,6 +594,15 @@ body {
     }
     to {
         opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
     }
 }
 
@@ -606,6 +618,8 @@ body {
     justify-content: center;
     animation: slideIn 0.4s ease;
     position: relative;
+    z-index: 10000;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
 @keyframes slideIn {
@@ -698,7 +712,7 @@ body {
     }
     
     .songs-grid {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-template-columns: repeat(3, 1fr) !important;
         gap: 20px;
     }
     
@@ -761,7 +775,7 @@ body {
     }
     
     .songs-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, 1fr) !important;
     }
     
     .message-card {
@@ -778,7 +792,7 @@ body {
     }
     
     .gallery-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, 1fr);
         gap: 20px;
     }
     

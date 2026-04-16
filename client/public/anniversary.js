@@ -84,15 +84,13 @@ function setupSongCardInteraction() {
     songCards.forEach(card => {
         const playOverlay = card.querySelector('.play-overlay');
         
-        // Show interaction hint
-        playOverlay.style.cursor = 'pointer';
-        
-        // Future: Connect to Spotify or add play functionality
-        playOverlay.addEventListener('click', function() {
-            // REPLACE THIS: Add your Spotify embed link or music player integration here
-            console.log('Play button clicked! Connect to Spotify embed here.');
-            // Example: You could open a modal, play music, or redirect to Spotify
-        });
+        // Only add handlers if overlay exists
+        if (playOverlay) {
+            playOverlay.style.cursor = 'pointer';
+            playOverlay.addEventListener('click', function() {
+                console.log('Play button clicked! Connect to Spotify embed here.');
+            });
+        }
     });
 }
 
@@ -104,6 +102,8 @@ function setupGalleryLightbox() {
     galleryItems.forEach(item => {
         item.addEventListener('click', function() {
             const img = this.querySelector('.gallery-image');
+            if (!img) return; // Skip if no image found
+            
             const caption = this.querySelector('.gallery-caption');
             
             // Create lightbox
@@ -141,18 +141,22 @@ function setupGalleryLightbox() {
                 object-fit: contain;
             `;
             
-            const lightboxCaption = document.createElement('p');
-            lightboxCaption.textContent = caption.textContent;
-            lightboxCaption.style.cssText = `
-                padding: 20px;
-                text-align: center;
-                color: #666;
-                font-size: 16px;
-                background: #f5f5f5;
-            `;
-            
             lightboxContent.appendChild(lightboxImage);
-            lightboxContent.appendChild(lightboxCaption);
+            
+            // Only add caption if it exists
+            if (caption) {
+                const lightboxCaption = document.createElement('p');
+                lightboxCaption.textContent = caption.textContent;
+                lightboxCaption.style.cssText = `
+                    padding: 20px;
+                    text-align: center;
+                    color: #666;
+                    font-size: 16px;
+                    background: #f5f5f5;
+                `;
+                lightboxContent.appendChild(lightboxCaption);
+            }
+            
             lightbox.appendChild(lightboxContent);
             
             // Close lightbox on click
@@ -281,59 +285,107 @@ function updateGalleryImage(index, imageUrl, caption) {
 // ============ SURPRISE HEART FUNCTIONALITY ============
 // Shows surprise image when heart is clicked
 function setupSurpriseHeart() {
+    // Try finding the element
     const surpriseHeart = document.getElementById('surpriseHeart');
     
     if (surpriseHeart) {
-        surpriseHeart.addEventListener('click', function(e) {
-            e.stopPropagation();
-            showSurpriseModal();
-        });
+        // Direct click handler
+        surpriseHeart.style.cursor = 'pointer';
+        surpriseHeart.onclick = showSurpriseModal;
+        surpriseHeart.addEventListener('click', showSurpriseModal);
+    } else {
+        // Fallback: wait a moment and try again
+        setTimeout(() => {
+            const heart = document.getElementById('surpriseHeart');
+            if (heart) {
+                heart.style.cursor = 'pointer';
+                heart.onclick = showSurpriseModal;
+                heart.addEventListener('click', showSurpriseModal);
+            }
+        }, 500);
     }
 }
 
 // ============ SURPRISE MODAL ============
 // Creates and shows the surprise modal with playlist image
-function showSurpriseModal() {
-    // Create modal
-    const modal = document.createElement('div');
-    modal.classList.add('surprise-modal');
+function showSurpriseModal(e) {
+    if (e) e.stopPropagation();
     
-    const modalContent = document.createElement('div');
-    modalContent.classList.add('surprise-modal-content');
+    // Create a simple modal with direct inline styles
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 999999;
+    `;
+    
+    // Create content card
+    const card = document.createElement('div');
+    card.style.cssText = `
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        max-width: 500px;
+        max-height: 600px;
+        box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        pointer-events: auto;
+    `;
     
     // Create close button
-    const closeBtn = document.createElement('button');
-    closeBtn.classList.add('surprise-modal-close');
-    closeBtn.textContent = '✕';
-    closeBtn.addEventListener('click', () => {
+    const closeBtn = document.createElement('div');
+    closeBtn.innerHTML = '✕';
+    closeBtn.style.cssText = `
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 30px;
+        cursor: pointer;
+        color: #333;
+        z-index: 10001;
+        pointer-events: auto;
+    `;
+    closeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         modal.remove();
     });
     
     // Create image
     const img = document.createElement('img');
-    img.src = '/image/Playlist.jpeg';
-    img.alt = 'Surprise Playlist';
-    img.classList.add('surprise-modal-image');
+    img.src = './image/Playlist.jpeg';
+    img.style.cssText = `
+        max-width: 90%;
+        max-height: 400px;
+        object-fit: contain;
+        border-radius: 10px;
+    `;
     
-    modalContent.appendChild(closeBtn);
-    modalContent.appendChild(img);
-    modal.appendChild(modalContent);
+    card.appendChild(closeBtn);
+    card.appendChild(img);
+    modal.appendChild(card);
     
-    // Close modal when clicking outside
+    // Close on outside click (only if clicking the dark background)
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             modal.remove();
         }
     });
     
-    // Close with Escape key
-    document.addEventListener('keydown', function closeSurpriseModal(e) {
-        if (e.key === 'Escape') {
-            modal.remove();
-            document.removeEventListener('keydown', closeSurpriseModal);
-        }
-    });
-    
+    // Add to body
     document.body.appendChild(modal);
 }
 
